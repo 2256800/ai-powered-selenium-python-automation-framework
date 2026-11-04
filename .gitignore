@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Virtual environment
+venv/
+.env
+
+# Database
+*.db
+*.sqlite3
+
+# Test output
+logs/
+screenshots/
+reports/
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

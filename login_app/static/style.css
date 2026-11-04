@@ -1,0 +1,137 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  }
+
+body {
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.container {
+width: 380px;
+padding: 35px;
+background: #ffffff;
+border-radius: 12px;
+box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+text-align: center;
+}
+
+h1, h2 {
+color: #333;
+margin-bottom: 20px;
+}
+
+p {
+margin: 15px 0;
+color: #555;
+}
+
+form {
+display: flex;
+flex-direction: column;
+text-align: left;
+}
+
+label {
+margin-top: 15px;
+margin-bottom: 7px;
+font-weight: bold;
+color: #333;
+}
+
+input {
+width: 100%;
+padding: 12px;
+border: 1px solid #ccc;
+border-radius: 6px;
+font-size: 15px;
+}
+
+input:focus {
+outline: none;
+border-color: #667eea;
+}
+
+small {
+margin-top: 8px;
+color: #666;
+}
+
+button {
+margin-top: 22px;
+padding: 12px;
+background: #667eea;
+color: white;
+border: none;
+border-radius: 6px;
+font-size: 16px;
+cursor: pointer;
+}
+
+button:hover {
+background: #764ba2;
+}
+
+a {
+color: #667eea;
+text-decoration: none;
+font-weight: bold;
+}
+
+a:hover {
+text-decoration: underline;
+}
+
+.error {
+color: #d93025;
+background: #ffe8e6;
+padding: 10px;
+border-radius: 5px;
+}
+
+/* Password field with eye icon */
+.password-box {
+position: relative;
+width: 100%;
+display: flex;
+align-items: center;
+}
+
+.password-box input {
+width: 100%;
+padding-right: 45px;
+}
+
+.password-box .toggle-password {
+position: absolute;
+right: 10px;
+top: 50%;
+transform: translateY(-50%);
+width: auto;
+height: auto;
+margin: 0;
+padding: 5px;
+background: transparent;
+border: none;
+color: #555;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.password-box .toggle-password:hover {
+background: transparent;
+color: #222;
+}
+
+.password-box .toggle-password svg {
+width: 22px;
+height: 22px;
+}

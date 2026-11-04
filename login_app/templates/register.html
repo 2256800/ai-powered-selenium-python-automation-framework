@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <h2>Create Your Account</h2>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form action="/register" method="POST">
+
+            <label>Username</label>
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Enter username"
+                minlength="3"
+                maxlength="30"
+                required
+            >
+
+            <label>Password</label>
+
+            <div class="password-box">
+
+                <input
+                    type="password"
+                    id="registerPassword"
+                    name="password"
+                    placeholder="Enter password"
+                    minlength="8"
+                    maxlength="10"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="toggle-password"
+                    onclick="togglePassword('registerPassword', this)"
+                >
+                    👁
+                </button>
+
+            </div>
+
+            <small>Password must contain 8 to 10 characters.</small>
+
+            <button type="submit">Register</button>
+
+        </form>
+
+        <p>Already have an account?
+            <a href="/">Login here</a>
+        </p>
+
+    </div>
+
+    <script src="/static/password.js"></script>
+
+</body>
+</html>

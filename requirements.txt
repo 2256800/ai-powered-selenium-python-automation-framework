@@ -1,0 +1,9 @@
+selenium
+pytest
+pytest-html
+fastapi
+uvicorn
+jinja2
+python-multipart
+pwdlib[argon2]
+openpyxl
