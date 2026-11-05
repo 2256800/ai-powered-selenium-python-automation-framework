@@ -1,8 +1,10 @@
 import pytest
 import os
+import re
 from datetime import datetime
 from selenium import webdriver
 from utils.logger import logger
+from ai.ai_failure_analyzer import analyze_test_failure
 
 
 @pytest.fixture(params=["chrome", "edge"])
@@ -43,20 +45,52 @@ def pytest_runtest_makereport(item, call):
             logger.error(str(report.longrepr))
 
             browser = item.funcargs.get("driver")
+            screenshot_path = None
 
             if browser:
-                os.makedirs("screenshots", exist_ok=True)
+                try:
+                    os.makedirs("screenshots", exist_ok=True)
 
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-                screenshot_name = (
-                    f"screenshots/{item.name}_{timestamp}.png"
-                )
+                    safe_test_name = re.sub(
+                        r'[<>:"/\\|?*]',
+                        "_",
+                        item.name
+                    )
 
-                browser.save_screenshot(screenshot_name)
+                    screenshot_path = (
+                        f"screenshots/{safe_test_name}_{timestamp}.png"
+                    )
 
-                logger.info(f"Failure screenshot saved: {screenshot_name}")
-                print(f"\nFailure screenshot saved: {screenshot_name}")
+                    browser.save_screenshot(screenshot_path)
+
+                    logger.info(
+                        f"Failure screenshot saved: {screenshot_path}"
+                    )
+
+                    print(
+                        f"\nFailure screenshot saved: {screenshot_path}"
+                    )
+
+                except Exception as error:
+                    logger.error(f"Screenshot capture failed: {error}")
+
+            # AI-powered failure analysis
+            logger.info("Starting AI failure analysis using Llama 3...")
+
+            print("\nStarting AI Failure Analysis...")
+
+            analysis = analyze_test_failure(
+                test_name=item.name,
+                error_message=str(report.longrepr),
+                screenshot_path=screenshot_path
+            )
+
+            if analysis:
+                logger.info("AI failure analysis completed successfully.")
+                print("\nAI Failure Analysis:")
+                print(analysis)
 
         elif report.skipped:
             logger.warning(f"SKIPPED: {item.name}")
