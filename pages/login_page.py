@@ -31,14 +31,12 @@ class LoginPage(BasePage):
 
     def get_error_message(self):
         self.wait.until(
-            lambda driver: driver.find_element(
-                *self.ERROR_MESSAGE
+            lambda driver: self.find_element(
+                self.ERROR_MESSAGE
             ).text.strip() != ""
         )
 
-        return self.driver.find_element(
-            *self.ERROR_MESSAGE
-        ).text.strip()
+        return self.get_text(self.ERROR_MESSAGE).strip()
 
     def get_success_message(self):
         return self.get_text(self.SUCCESS_MESSAGE)

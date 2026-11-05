@@ -1,10 +1,23 @@
+import time
 import pytest
-import os
-import re
-from datetime import datetime
 from selenium import webdriver
+
 from utils.logger import logger
 from ai.ai_failure_analyzer import analyze_test_failure
+from ai.ai_execution_report import generate_execution_report
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--ai-report",
+        action="store_true",
+        default=False,
+        help="Generate AI execution report using Llama 3"
+    )
+
+
+def pytest_sessionstart(session):
+    session.config._ai_report_start_time = time.time()
 
 
 @pytest.fixture(params=["chrome", "edge"])
@@ -19,12 +32,16 @@ def driver(request):
     elif browser_name == "edge":
         browser = webdriver.Edge()
 
-    browser.maximize_window()
+    else:
+        raise ValueError(f"Unsupported browser: {browser_name}")
 
-    yield browser
+    try:
+        browser.maximize_window()
+        yield browser
 
-    browser.quit()
-    logger.info(f"Closed browser: {browser_name}")
+    finally:
+        browser.quit()
+        logger.info(f"Closed browser: {browser_name}")
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -41,56 +58,54 @@ def pytest_runtest_makereport(item, call):
             logger.info(f"PASSED: {item.name}")
 
         elif report.failed:
+
             logger.error(f"FAILED: {item.name}")
             logger.error(str(report.longrepr))
-
-            browser = item.funcargs.get("driver")
-            screenshot_path = None
-
-            if browser:
-                try:
-                    os.makedirs("screenshots", exist_ok=True)
-
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-                    safe_test_name = re.sub(
-                        r'[<>:"/\\|?*]',
-                        "_",
-                        item.name
-                    )
-
-                    screenshot_path = (
-                        f"screenshots/{safe_test_name}_{timestamp}.png"
-                    )
-
-                    browser.save_screenshot(screenshot_path)
-
-                    logger.info(
-                        f"Failure screenshot saved: {screenshot_path}"
-                    )
-
-                    print(
-                        f"\nFailure screenshot saved: {screenshot_path}"
-                    )
-
-                except Exception as error:
-                    logger.error(f"Screenshot capture failed: {error}")
-
-            # AI-powered failure analysis
-            logger.info("Starting AI failure analysis using Llama 3...")
 
             print("\nStarting AI Failure Analysis...")
 
             analysis = analyze_test_failure(
                 test_name=item.name,
-                error_message=str(report.longrepr),
-                screenshot_path=screenshot_path
+                error_message=str(report.longrepr)
             )
 
             if analysis:
-                logger.info("AI failure analysis completed successfully.")
                 print("\nAI Failure Analysis:")
                 print(analysis)
 
         elif report.skipped:
             logger.warning(f"SKIPPED: {item.name}")
+
+
+def pytest_terminal_summary(
+    terminalreporter,
+    exitstatus,
+    config
+):
+
+    if not config.getoption("--ai-report"):
+        return
+
+    stats = terminalreporter.stats
+
+    passed = len(stats.get("passed", []))
+    failed = len(stats.get("failed", []))
+    skipped = len(stats.get("skipped", []))
+
+    total = passed + failed + skipped
+
+    start_time = getattr(
+        config,
+        "_ai_report_start_time",
+        time.time()
+    )
+
+    duration = time.time() - start_time
+
+    generate_execution_report(
+        passed=passed,
+        failed=failed,
+        skipped=skipped,
+        total=total,
+        duration=duration
+    )
