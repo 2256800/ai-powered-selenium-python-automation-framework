@@ -191,7 +191,7 @@ SeleniumPythonFramework/
         |-- selenium-tests.yml
 ```
 
-*Note: The project structure above highlights the main modules; individual test files may be located in the project root.*
+
 
 ## Installation and Setup
 
